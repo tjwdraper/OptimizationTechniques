@@ -29,9 +29,6 @@ function x = newton(f, df, Hinvf, x0, niter, convergence)
         % display progress to command window
         if mod(iter, 100) == 0
             fprintf("iter: %d - x: [%.3f %.3f]\n", iter, x(1), x(2));
-            disp(p);
-            disp(alpha);
-            disp(x);
         endif
 
     endfor
