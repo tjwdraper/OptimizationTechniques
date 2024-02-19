@@ -1,6 +1,6 @@
 function dx = grad_rosenbrock_fd(x)
     %% Approximate the gradient with a finite difference approximation
-    dx = zeros(size(x));
+    dx = zeros(size(x),1);
     
     % Get the step size
     eps = 1e-5;
@@ -10,9 +10,9 @@ function dx = grad_rosenbrock_fd(x)
         x_for = x;
         x_back = x;
         
-        x_for(d) += eps;
-        x_back(d) -= eps;
+        x_for(d,1) += eps;
+        x_back(d,1) -= eps;
         
-        dx(d) = (rosenbrock(x_for) - rosenbrock(x_back))/(2*eps);
+        dx(d,1) = (rosenbrock(x_for) - rosenbrock(x_back))/(2*eps);
     endfor
 endfunction

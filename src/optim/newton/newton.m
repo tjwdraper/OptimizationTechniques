@@ -1,9 +1,9 @@
-function x = gradient_descent(f, df, x0, niter, convergence)
+function x = newton(f, df, Hinvf, x0, niter, convergence)
     x = x0;
 
     for iter = 1 : niter
         % get step direction
-        p = -df(x);
+        p = -Hinvf(x) * df(x);
 
         % get the step size
         alpha = line_search(f, df, x, p);
