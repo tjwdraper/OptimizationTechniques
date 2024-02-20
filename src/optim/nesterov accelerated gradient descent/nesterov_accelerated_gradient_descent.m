@@ -1,25 +1,26 @@
-function x = gradient_descent(f, df, x0, niter, convergence, learningrate)
+function x = nesterov_accelerated_gradient_descent(f, df, x0, niter, convergence)
     x = x0;
-
+    y = x0;
+    v = zeros(size(x0));
+    
+    gamma = 0.90;
+    alpha = 1e-4;
+    
     for iter = 1 : niter
-        % get step direction
-        p = -df(x);
-
-        % get the step size
-        if nargin == 6
-            alpha = learningrate;
-        else
-            alpha = line_search(f, df, x, p);
-        endif
+        y = x - gamma * v;
+        
+        p = df(y);
+        
+        v = gamma * v + alpha * p;
+        
+        x = x - v;
 
         % check if convergence criterion is reached
         if ( sqrt(p(:).^2) < convergence)
             fprintf("Convergence reached on iteration %d\n", iter);
             break;
         endif
-
-        % increment estimate
-        x = x + alpha * p;
+        
 
         % display progress to command window
         if mod(iter, 100) == 0
