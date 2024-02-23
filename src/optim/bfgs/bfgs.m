@@ -1,50 +1,56 @@
-function x = bfgs(f, df, x0, niter, convergence)
+function x = bfgs(f, df, x0, niter, convergence, verbose)
+    fprintf("----------------------------------------------------------------------------------------------------\n");
+    fprintf("| Broyden-Fletcher-Goldfarb-Shanno (BFGS) algorithm\n");
+    fprintf("| Author: T.J.W. Draper\n");
+    fprintf("| Year: 2024\n|\n");
+    fprintf("| \n");
+    fprintf("| x0 = (%.3f %.3f)\n", x0(1), x0(2));
+    fprintf("| niter: %d\n", niter);
+    fprintf("| convergence criterion: ||p|| < %.3f\n", convergence);
+    fprintf("----------------------------------------------------------------------------------------------------\n");
+    
+    % Current estimate of solution and its gradient
     x = x0;
-
-    H = eye(2,2);
     gradf = df(x0);
 
+    % Specify initial estimate of the inverse Hessian. For lack of information, 
+    % we estimate it with the identity matrix.
+    Hinvf = eye(2,2);
+
     for iter = 1 : niter
-        fprintf("Iteration %d\n", iter);
         % get step direction
-        p = -H * gradf;
-        fprintf("Step direction p: (%d %d)\n", p(1), p(2));
+        p = -Hinvf * gradf;
 
         % get the step size
         alpha = line_search(f, df, x, p);
-        fprintf("Step size alpha: %.3f\n", alpha);
 
         % check if convergence criterion is reached
         if ( sqrt(p(:).^2) < convergence)
-            fprintf("Convergence reached on iteration %d\n", iter);
-            break;
+            fprintf("Convergence reached on iteration %d. Final estimate: x = (%.3f %.3f)\n", iter, x(1), x(2));
+            return;
         endif
 
         % Get the increment s and update estimate x
         s = alpha * p;
-        fprintf("Increment s: (%.3f %.3f)\n", s(1), s(2));
 
         x = x + s;
-        fprintf("New estimate x: (%.3f %.3f)\n", x(1), x(2));
 
-        % Get the new gradient
+        % Get the new gradient and update gradient difference y
         gradf_prev = gradf;
         gradf = df(x);
 
         y = gradf - gradf_prev;
-        fprintf("Difference in gradients: (%.3f %.3f)\n", y(1), y(2));
 
-        % update inverse hessian estimate
-        H = H ...
-          + (s' * y + y' * H * y) * (s * s') / (s' * y)^2 ...
-          - (H * y * s' + s * y' * H) / (s'* y);
-        fprintf("New inverse Hessian estimate:\n");
-        disp(H);
+        % update inverse Hessian estimate
+        Hinvf = Hinvf ...
+          + (s' * y + y' * Hinvf * y) * (s * s') / (s' * y)^2 ...
+          - (Hinvf * y * s' + s * y' * Hinvf) / (s'* y);
 
         % display progress to command window
-        if mod(iter, 100) == 0
+        if verbose
             fprintf("iter: %d - x: [%.3f %.3f]\n", iter, x(1), x(2));
         endif
-
     endfor
+    
+    fprintf("Maximum number of iterations reached. Final estimate: x = (%.3f %.3f)\n", x(1), x(2));
 endfunction
