@@ -12,6 +12,7 @@ function x = lbfgs(f, df, x0, niter, convergence, m)
     rho   = zeros(1, niter);
 
     for iter = 1 : niter
+      fprintf("Iteration: %d\n", iter);
       % Get new values of x and g
       g(:, iter) = df(x(:, iter));
 
@@ -28,12 +29,15 @@ function x = lbfgs(f, df, x0, niter, convergence, m)
         y(:, i) = g(:, i+1) - g(:, i);
 
         yTs = y(:, i)' * s(:, i);
-        if (yTs == 0)
+        if (yTs ~= 0)
           rho(i) = 1 / yTs;
         else
           rho(i) = 0;
         endif
+
+        fprintf("rho(%d): %.5f\n", i, rho(i));
       endfor
+
 
 
       % Get values of alpha and update q
@@ -44,6 +48,9 @@ function x = lbfgs(f, df, x0, niter, convergence, m)
 
         alpha(i) = rho(i) * s(:, i)' * q;
         q = q - alpha(i) * y(:, i);
+
+        fprintf("alpha(%d): %.5f\n", i, alpha(i));
+        fprintf("q: (%.5f %.5f)\n", i, q(1), q(2));
       endfor
 
       % Get the value of gamma
@@ -54,10 +61,12 @@ function x = lbfgs(f, df, x0, niter, convergence, m)
       else
         gamma(iter) = s(:, iter-1)' * y(:, iter-1) / (y(:, iter-1)' * y(:,iter-1));
       endif
+      fprintf("gamma(%d): %.5f\n", i, gamma(iter));
 
       % Get initial value of search direction
       p = gamma(iter) * q;
 
+      fprintf("p(%d): (%.5f %.5f)\n", iter, p(1), p(2));
       % Get values of beta and update p
       for i = iter-m:iter-1
         if i < 1
@@ -66,6 +75,10 @@ function x = lbfgs(f, df, x0, niter, convergence, m)
 
         beta(i) = rho(i) * y(:,i)' * p;
         p = p + s(:, i) * (alpha(i) - beta(i));
+
+        fprintf("beta(%d): %.5f\n", i, beta(i));
+        fprintf("p(%d): (%.5f %.5f)\n", i, p(1), p(2));
+
       endfor
 
       % Get correct direction
