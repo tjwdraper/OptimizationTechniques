@@ -27,6 +27,7 @@ function x = newton(f, df, Hinvf, x0, niter, convergence, verbose)
         alpha = line_search(f, df, x, p);
         
         % check if convergence criterion is reached
+        disp(sqrt(sum(p(:).^2)));
         if ( sqrt(p(:).^2) < convergence)
             fprintf("Convergence reached on iteration %d. Final estimate: x = (%.3f %.3f)\n", iter, x(1), x(2));
             return;
