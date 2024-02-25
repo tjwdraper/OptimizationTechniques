@@ -48,7 +48,7 @@ function x = bfgs(f, df, x0, niter, convergence, verbose)
 
         % display progress to command window
         if verbose
-            fprintf("iter: %d - x: [%.3f %.3f]\n", iter, x(1), x(2));
+            fprintf("iter: %d - x: (%.3f %.3f)\n", iter, x(1), x(2));
         endif
     endfor
     

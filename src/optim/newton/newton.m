@@ -1,4 +1,14 @@
-function x = newton(f, df, Hinvf, x0, niter, convergence)
+function x = newton(f, df, Hinvf, x0, niter, convergence, verbose)
+    fprintf("----------------------------------------------------------------------------------------------------\n");
+    fprintf("| Newton's algorithm\n");
+    fprintf("| Author: T.J.W. Draper\n");
+    fprintf("| Year: 2024\n|\n");
+    fprintf("| \n");
+    fprintf("| x0 = (%.3f %.3f)\n", x0(1), x0(2));
+    fprintf("| niter: %d\n", niter);
+    fprintf("| convergence criterion: ||p|| < %.3f\n", convergence);
+    fprintf("----------------------------------------------------------------------------------------------------\n");
+    
     x = x0;
 
     for iter = 1 : niter
@@ -8,7 +18,6 @@ function x = newton(f, df, Hinvf, x0, niter, convergence)
         % Check that the Hessian is positive definite
         if ~posdef(Hinv)
             Hinv = eye(2);
-            fprintf("iter: %d - Hessian is not positive definite, use gradient descent instead\n", iter);
         endif
         
         % get step direction
@@ -19,17 +28,18 @@ function x = newton(f, df, Hinvf, x0, niter, convergence)
         
         % check if convergence criterion is reached
         if ( sqrt(p(:).^2) < convergence)
-            fprintf("Convergence reached on iteration %d\n", iter);
-            break;
+            fprintf("Convergence reached on iteration %d. Final estimate: x = (%.3f %.3f)\n", iter, x(1), x(2));
+            return;
         endif
 
         % increment estimate
         x = x + alpha * p;
 
         % display progress to command window
-        if mod(iter, 100) == 0
-            fprintf("iter: %d - x: [%.3f %.3f]\n", iter, x(1), x(2));
+        if verbose
+            fprintf("iter: %d - x: (%.3f %.3f)\n", iter, x(1), x(2));
         endif
-
     endfor
+    
+    fprintf("Maximum number of iterations reached. Final estimate: x = (%.3f %.3f)\n", x(1), x(2));
 endfunction
